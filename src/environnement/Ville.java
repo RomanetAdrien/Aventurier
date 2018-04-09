@@ -10,17 +10,14 @@ public class Ville {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    protected String size;
-    public String getSize() {
+    protected CitySize size;
+    public CitySize getSize() {
         return size;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    protected int energyCost;
+    public int getEnergyCost() {
+        return energyCost;
     }
 
     protected float food;
@@ -28,17 +25,9 @@ public class Ville {
         return food;
     }
 
-    public void setFood(float food) {
-        this.food = food;
-    }
-
     protected float energy;
     public float getEnergy() {
         return energy;
-    }
-
-    public void setEnergy(float energy) {
-        this.energy = energy;
     }
 
     protected float risk;
@@ -46,15 +35,12 @@ public class Ville {
         return risk;
     }
 
-    public void setRisk(float risk) {
-        this.risk = risk;
-    }
-
-    public Ville(String name, String size, float food, float energy, float risk) {
+    public Ville(String name, CitySize size, float food, float energy, float risk) {
         this.name = name;
         this.size = size;
+        this.energyCost = size.ordinal() +1;
         this.food = food;
         this.energy = energy;
-        this.risk = risk;
+        this.risk = size.getRisk();
     }
 }

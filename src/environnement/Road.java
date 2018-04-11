@@ -1,55 +1,42 @@
 package environnement;
 
-public class Route {
+public class Road {
 
     protected int number;
-
     public int getNumber() {
         return number;
     }
 
     protected int length;
-
     public int getLength() {
         return length;
     }
 
-    protected int distanceToGoal;
-
-    public int getDistanceToGoal() {
-        return distanceToGoal;
-    }
-
     protected int energyCost;
-
-    public int getExhaustion() {
+    public int getEnergyCost() {
         return energyCost;
     }
 
-    public int food;
-
+    public int foodCost;
     public int getFood() {
-        return food;
+        return foodCost;
     }
 
-    public Ville cityA;
-
-    public Ville getCityA() {
+    public City cityA;
+    public City getCityA() {
         return cityA;
     }
 
-    public Ville cityB;
-
-    public Ville getCityB() {
+    public City cityB;
+    public City getCityB() {
         return cityB;
     }
 
-    public Route(int number, int length, int distanceToGoal, int food, Ville cityA, Ville cityB) {
+    public Road(int number, int length, int foodCost, City cityA, City cityB) {
         this.number = number;
         this.length = length;
-        this.distanceToGoal = distanceToGoal;
         this.energyCost = cityA.getEnergyCost() + cityB.getEnergyCost();
-        this.food = food;
+        this.foodCost = foodCost;
         this.cityA = cityA;
         this.cityB = cityB;
     }

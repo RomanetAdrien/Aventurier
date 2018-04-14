@@ -9,22 +9,51 @@ import java.util.ArrayList;
  */
 public class Aventurier {
 
+    public void PrintMatrix(Road[][] graphMatrix) {
+        int i, j;
+        for (i = 0; i < 13; i++) {
+            for (j = 0; j < 13; j++) {
+                if (graphMatrix[i][j] != null) {
+                    System.out.print(graphMatrix[i][j].getNumber());
+                } else {
+                    System.out.print(0);
+                }
+            }
+            System.out.println();
+        }
+    }
+
     public static void main(String[] args) {
 
         // Cities
-        City paris = new City(1,"Paris", CitySize.BIG, 750);
-        City orleans = new City(2,"Orleans", CitySize.BIG, 664);
-        City troyes = new City(3,"Troyes", CitySize.MEDIUM, 634);
-        City bourges = new City(4,"Bourges", CitySize.MEDIUM,558);
-        City auxerre = new City(5,"Auxerre", CitySize.SMALL, 592);
-        City clermont = new City(6,"Clermont-Ferrand", CitySize.MEDIUM, 388);
-        City nevers = new City(7,"Nevers", CitySize.SMALL, 515);
-        City lyon = new City(8,"Lyon", CitySize.BIG, 313);
-        City millau = new City(9,"Millau", CitySize.SMALL, 251);
-        City saintEtienne = new City(10,"Saint-Etienne", CitySize.MEDIUM, 296);
+        ArrayList<City> cities = new ArrayList<>();
+        City paris = new City(1, "Paris", CitySize.BIG, 750);
+        City orleans = new City(2, "Orleans", CitySize.BIG, 664);
+        City troyes = new City(3, "Troyes", CitySize.MEDIUM, 634);
+        City bourges = new City(4, "Bourges", CitySize.MEDIUM, 558);
+        City auxerre = new City(5, "Auxerre", CitySize.SMALL, 592);
+        City clermont = new City(6, "Clermont-Ferrand", CitySize.MEDIUM, 388);
+        City nevers = new City(7, "Nevers", CitySize.SMALL, 515);
+        City lyon = new City(8, "Lyon", CitySize.BIG, 313);
+        City millau = new City(9, "Millau", CitySize.SMALL, 251);
+        City saintEtienne = new City(10, "Saint-Etienne", CitySize.MEDIUM, 296);
         City valence = new City(11, "Valence", CitySize.MEDIUM, 213);
-        City montpellier = new City(12,"Montpellier", CitySize.BIG, 154);
-        City marseille = new City(13,"Marseille", CitySize.BIG, 0);
+        City montpellier = new City(12, "Montpellier", CitySize.BIG, 154);
+        City marseille = new City(13, "Marseille", CitySize.BIG, 0);
+
+        cities.add(paris);
+        cities.add(orleans);
+        cities.add(troyes);
+        cities.add(bourges);
+        cities.add(auxerre);
+        cities.add(clermont);
+        cities.add(nevers);
+        cities.add(lyon);
+        cities.add(millau);
+        cities.add(saintEtienne);
+        cities.add(valence);
+        cities.add(montpellier);
+        cities.add(marseille);
 
         // Roads
         ArrayList<Road> roads = new ArrayList<>();
@@ -82,27 +111,18 @@ public class Aventurier {
 
         // Adjacency matrix
         Road[][] graphMatrix = new Road[13][13];
-        int i,j;
+        int i, j;
         for (Road road : roads
-             ) {
-               i = road.getCityA().getId() - 1;
-               j = road.getCityB().getId() - 1;
-               graphMatrix[i][j] = road;
-               graphMatrix[j][i] = road;
+                ) {
+            i = road.getCityA().getId() - 1;
+            j = road.getCityB().getId() - 1;
+            graphMatrix[i][j] = road;
+            graphMatrix[j][i] = road;
         }
 
-        for(i=0;i<13;i++){
-            for(j=0;j<13;j++){
-                if(graphMatrix[i][j]!=null){
-                    System.out.print(graphMatrix[i][j].getNumber());
-                }
-                else {
-                    System.out.print(0);
-                }
-            }
-            System.out.println();
-        }
-
+        // create the problem
+        Problem problem = new Problem(graphMatrix, paris, marseille);
+        problem.GetAccessibleRoads(problem.getCurrentCity());
     }
 
 }

@@ -3,6 +3,8 @@ package agent;
 import environnement.City;
 import environnement.Road;
 
+import java.util.List;
+
 /**
  * Created by adrie on 05/04/2018.
  */
@@ -11,21 +13,22 @@ public class Agent {
     protected int energy;
     protected int food;
     protected boolean isFine;
-    protected String strategy;
+    // protected String strategy;
     protected Road nextRoad;
     protected Problem problem;
+    protected StrategyEnum strategy;
 
-    public Agent(Problem prob){
+    public Agent(Problem prob, StrategyEnum strategy){
         energy=100;
         food=100;
         problem=prob;
-        strategy="bite";
+        this.strategy=strategy;
     }
 
 
     public void chooseNextMove(){
         switch (strategy){
-            case "Brutal":chooseNextMoveBrutal();break;
+            case NONE:chooseNextMoveBrutal();break;
             default:chooseNextMoveBrutal();break;
         }
     }
@@ -57,6 +60,50 @@ public class Agent {
             }
         }
         nextRoad=next;
+    }
+
+    public Road GetBestRoad(List<Road> roadList){
+        Road bestRoad = null;
+        float bestDesirability = 0;
+        float roadDesirability = 0;
+
+        for (Road road : roadList) {
+            roadDesirability = GetDesirability(road);
+            if( roadDesirability > bestDesirability) {
+                bestDesirability = roadDesirability;
+                bestRoad = road;
+            }
+        }
+
+        return bestRoad;
+    }
+
+    public float GetDesirability(Road road){
+        float desirability = 0;
+        int foodBoost = 1, energyBoost = 1, riskBoost = 1, distanceBoost = 1;
+
+        switch(this.strategy){
+            case FOODFOCUS:
+                foodBoost = 2;
+
+                break;
+            case ENERGYFOCUS:
+                energyBoost = 2;
+                break;
+            case RISKFOCUS:
+                riskBoost = 2;
+                break;
+            case SURVIVALFOCUS:
+
+                break;
+            case SHORTESTPATHFOCUS:
+                distanceBoost = 2;
+                break;
+            default:
+                break;
+        }
+
+        return desirability;
     }
 
     public void run(){

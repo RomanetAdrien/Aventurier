@@ -24,6 +24,11 @@ public class Problem {
     }
     public void setCurrentCity(City city) {currentCity=city;}
 
+    // straight distance between goal city and depart city
+    public int straightlinedistance;
+    public int getStraightlinedistance(){ return straightlinedistance;}
+    public void setStraightlinedistance(int distance){straightlinedistance=distance; }
+
 
     // goal city
     private City goalCity;
@@ -51,7 +56,7 @@ public class Problem {
             }
         }
         // TODO delete print
-        PrintAccessibleRoads(roads);
+        //PrintAccessibleRoads(roads);
         return roads;
     }
 

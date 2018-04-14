@@ -127,6 +127,7 @@ public class Aventurier {
 
         // create the problem
         Problem problem = new Problem(graphMatrix, paris, marseille);
+        problem.setStraightlinedistance(750);
 
         // Debug :  print roads accessible from starting city
         //problem.GetAccessibleRoads(problem.getCurrentCity());

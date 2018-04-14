@@ -42,9 +42,9 @@ public class City {
         return energyCost;
     }
 
-    protected float food;
+    protected int food;
 
-    public float getFood() {
+    public int getFood() {
         return food;
     }
 
@@ -65,9 +65,9 @@ public class City {
         }
     }
 
-    protected float energy;
+    protected int energy;
 
-    public float getEnergy() {
+    public int getEnergy() {
         return energy;
     }
 

@@ -10,16 +10,21 @@ public class Agent {
 
     protected int energy;
     protected int food;
+    protected int maxenergy;
+    protected int maxfood;
     protected boolean isFine;
     protected String strategy;
     protected Road nextRoad;
     protected Problem problem;
 
     public Agent(Problem prob){
-        energy=100;
-        food=100;
+        maxenergy=100;
+        maxfood=100;
+        energy=maxenergy;
+        food=maxfood;
         problem=prob;
         strategy="bite";
+        isFine=true;
     }
 
 
@@ -36,13 +41,33 @@ public class Agent {
         }
     }
 
+    public int predictedFood(){
+        int aftermove=0;
+        int afterroad = food-((100*nextRoad.getLength()*nextRoad.getFood())/problem.getStraightlinedistance());
+        if(afterroad>0){
+            aftermove=afterroad+nextRoad.getCityB().getFood();
+        }
+        return aftermove;
+    }
+    public int predictedEnergy(){
+        int aftermove=0;
+        int afterroad = energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance());
+        if(afterroad>0){
+            aftermove=afterroad+nextRoad.getCityB().getEnergy();
+        }
+        return aftermove;
+    }
 
 
 
     public void move(){
-        food = Integer.max(0, food-nextRoad.getFood());
-        energy = Integer.max(0, energy-nextRoad.getEnergyCost());
+        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFood())/problem.getStraightlinedistance()));
+        energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
         updateStatus();
+        if(isFine){
+            food+=nextRoad.getCityB().getFood();
+            energy+=nextRoad.cityB.getEnergy();
+        }
 
         problem.setCurrentCity(nextRoad.getCityB());
         nextRoad.printRoad();
@@ -59,11 +84,23 @@ public class Agent {
         nextRoad=next;
     }
 
+    public void printStatus(){
+        System.out.println("Current city : "+problem.getCurrentCity().getName());
+        System.out.println("Food level : "+food+"/"+maxfood+ "   Energy level : "+energy+"/"+maxenergy);
+    }
+
     public void run(){
 
-        while(!problem.getCurrentCity().equals(problem.getGoalCity())){
+        while(isFine&&!problem.getCurrentCity().equals(problem.getGoalCity())){
             chooseNextMove();
             move();
+            printStatus();
+        }
+        if(isFine){
+            System.out.println("Congratulations ! You arrived in " +problem.getGoalCity().getName()+ " ! (weird choice of destination but whatever)");
+        }
+        else{
+            System.out.println("Sorry you have died on the roads of France, that's why you stay at home travelling is dangerous");
         }
 
     }

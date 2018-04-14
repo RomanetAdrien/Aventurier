@@ -40,4 +40,8 @@ public class Road {
         this.cityA = cityA;
         this.cityB = cityB;
     }
+
+    public void printRoad(){
+        System.out.println("From : "+cityA.getName()+"   To : "+cityB.getName());
+    }
 }

@@ -1,3 +1,5 @@
+import agent.Agent;
+import agent.Problem;
 import environnement.City;
 import environnement.CitySize;
 import environnement.Road;
@@ -123,6 +125,8 @@ public class Aventurier {
         // create the problem
         Problem problem = new Problem(graphMatrix, paris, marseille);
         problem.GetAccessibleRoads(problem.getCurrentCity());
+        Agent agent = new Agent(problem);
+        agent.run();
     }
 
 }

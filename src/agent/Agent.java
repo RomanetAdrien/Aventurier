@@ -1,34 +1,71 @@
 package agent;
 
 import environnement.City;
+import environnement.Road;
 
 /**
  * Created by adrie on 05/04/2018.
  */
 public class Agent {
 
-    protected int hp;
     protected int energy;
+    protected int food;
+    protected boolean isFine;
     protected String strategy;
-    protected City currentCity;
-    protected City nextCity;
+    protected Road nextRoad;
+    protected Problem problem;
+
+    public Agent(Problem prob){
+        energy=100;
+        food=100;
+        problem=prob;
+        strategy="bite";
+    }
 
 
-    public void chooseNextCity(){
+    public void chooseNextMove(){
         switch (strategy){
-            case "Brutal":chooseNextCityBrutal();break;
-            default:chooseNextCityBrutal();break;
+            case "Brutal":chooseNextMoveBrutal();break;
+            default:chooseNextMoveBrutal();break;
         }
     }
 
-    public void chooseNextCityBrutal(){
-        City next = currentCity;
-        for(City city : currentCity.getNeighbors()){
-            if(city.getDistanceToGoal()<=next.getDistanceToGoal()){
-                next = city;
+    public void updateStatus(){
+        if(food<=0||energy<=0){
+            isFine=false;
+        }
+    }
+
+
+
+
+    public void move(){
+        food = Integer.max(0, food-nextRoad.getFood());
+        energy = Integer.max(0, energy-nextRoad.getEnergyCost());
+        updateStatus();
+
+        problem.setCurrentCity(nextRoad.getCityB());
+        nextRoad.printRoad();
+        nextRoad=null;
+    }
+
+    public void chooseNextMoveBrutal(){
+        Road next = problem.GetAccessibleRoads(problem.getCurrentCity()).get(0);
+        for(Road road: problem.GetAccessibleRoads(problem.getCurrentCity())){
+            if(road.cityB.getDistanceToGoal()<=next.cityB.getDistanceToGoal()){
+                next = road;
             }
         }
-        nextCity=next;
+        nextRoad=next;
+    }
+
+    public void run(){
+
+        while(!problem.getCurrentCity().equals(problem.getGoalCity())){
+            chooseNextMove();
+            move();
+        }
+
     }
 
 

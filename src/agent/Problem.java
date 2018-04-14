@@ -1,3 +1,5 @@
+package agent;
+
 import environnement.City;
 import environnement.Road;
 
@@ -20,6 +22,7 @@ public class Problem {
     public City getCurrentCity() {
         return currentCity;
     }
+    public void setCurrentCity(City city) {currentCity=city;}
 
 
     // goal city

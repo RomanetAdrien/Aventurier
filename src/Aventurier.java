@@ -1,5 +1,6 @@
 import agent.Agent;
 import agent.Problem;
+import agent.StrategyEnum;
 import environnement.City;
 import environnement.CitySize;
 import environnement.Road;
@@ -134,7 +135,7 @@ public class Aventurier {
 
         // solve the problem
         problem.GetAccessibleRoads(problem.getCurrentCity());
-        Agent agent = new Agent(problem);
+        Agent agent = new Agent(problem, StrategyEnum.SHORTESTPATHFOCUS);
         agent.run();
     }
 

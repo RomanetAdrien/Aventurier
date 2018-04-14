@@ -15,7 +15,6 @@ public class Agent {
     protected int maxenergy;
     protected int maxfood;
     protected boolean isFine;
-    // protected String strategy;
     protected Road nextRoad;
     protected Problem problem;
     protected StrategyEnum strategy;
@@ -33,6 +32,9 @@ public class Agent {
 
     public void chooseNextMove(){
         switch (strategy){
+            case SHORTESTPATHFOCUS:
+                nextRoad = GetBestRoad(problem.GetAccessibleRoads(problem.getCurrentCity()));
+                break;
             case NONE:chooseNextMoveBrutal();break;
             default:chooseNextMoveBrutal();break;
         }
@@ -46,7 +48,7 @@ public class Agent {
 
     public int predictedFood(){
         int aftermove=0;
-        int afterroad = food-((100*nextRoad.getLength()*nextRoad.getFood())/problem.getStraightlinedistance());
+        int afterroad = food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance());
         if(afterroad>0){
             aftermove=afterroad+nextRoad.getCityB().getFood();
         }
@@ -64,7 +66,7 @@ public class Agent {
 
 
     public void move(){
-        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFood())/problem.getStraightlinedistance()));
+        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
         energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
         updateStatus();
         if(isFine){
@@ -110,24 +112,48 @@ public class Agent {
 
     public float GetDesirability(Road road){
         float desirability = 0;
-        int foodBoost = 1, energyBoost = 1, riskBoost = 1, distanceBoost = 1;
+        float foodBoost = 1, energyBoost = 1, riskBoost = 1, distanceBoost = 1;
+        float boost = 10;
+
+        System.out.println("Road from : " + road.getCityA().getName() + " to " + road.getCityB().getName());
+
+        float energyCost = (float) road.getEnergyCost()*50*road.getLength()/problem.getStraightlinedistance();
+        float foodCost = (float) road.getFoodCost()*50*road.getLength()/problem.getStraightlinedistance();
+
+        // TODO : comment log
+//        System.out.println("Energy cost :" + energyCost);
+//        System.out.println("Food cost :" + foodCost);
+
+        float foodDesirability = (float) (food+road.getCityB().getFood())/foodCost;
+        float energyDesirability = (float) (energy+road.getCityB().getEnergy())/energyCost;
+        float distanceDesirability = (float) (road.getLength()+road.getCityB().getDistanceToGoal())/road.getCityB().getDistanceToGoal();
+        float riskDesirability = (float) Math.min(food,energy)/(10*road.getRisk());
+
+//        System.out.println("Food desirability :" + foodDesirability);
+//        System.out.println("Energy desirability :" + energyDesirability);
+//        System.out.println("Distance desirability :" + distanceDesirability);
+//        System.out.println("Risk desirability :" + riskDesirability);
 
         switch(this.strategy){
             case FOODFOCUS:
-                foodBoost = 2;
-
+                foodBoost = boost;
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case ENERGYFOCUS:
-                energyBoost = 2;
+                energyBoost = boost;
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case RISKFOCUS:
-                riskBoost = 2;
+                riskBoost = boost;
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case SURVIVALFOCUS:
 
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case SHORTESTPATHFOCUS:
-                distanceBoost = 2;
+                distanceBoost = boost;
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             default:
                 break;

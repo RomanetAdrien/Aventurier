@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Aventurier {
 
-    public void PrintMatrix(Road[][] graphMatrix) {
+    public static void PrintMatrix(Road[][] graphMatrix) {
         int i, j;
         for (i = 0; i < 13; i++) {
             for (j = 0; j < 13; j++) {
@@ -120,9 +120,16 @@ public class Aventurier {
             graphMatrix[j][i] = road;
         }
 
+        // Debug : print matrix
+        //PrintMatrix(graphMatrix);
+
         // create the problem
         Problem problem = new Problem(graphMatrix, paris, marseille);
-        problem.GetAccessibleRoads(problem.getCurrentCity());
+
+        // Debug :  print roads accessible from starting city
+        //problem.GetAccessibleRoads(problem.getCurrentCity());
+
+        // solve the problem
     }
 
 }

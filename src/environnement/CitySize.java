@@ -7,9 +7,9 @@ public enum CitySize {
 
     protected String name;
 
-    protected int risk;
+    protected float risk;
 
-    public int getRisk(){
+    public float getRisk(){
         return this.risk;
     }
 
@@ -17,13 +17,13 @@ public enum CitySize {
         this.name = name;
         switch (name){
             case "SMALL":
-                this.risk = 30;
+                this.risk = 7.5f;
                 break;
             case "MEDIUM":
-                this.risk = 20;
+                this.risk = 5f;
                 break;
             case "BIG":
-                this.risk = 10;
+                this.risk = 2.5f;
                 break;
                 default:
                     break;

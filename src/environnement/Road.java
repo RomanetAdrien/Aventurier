@@ -32,6 +32,11 @@ public class Road {
         return cityB;
     }
 
+    public float risk;
+    public float getRisk() {
+        return risk;
+    }
+
     public Road(int number, int length, int foodCost, City cityA, City cityB) {
         this.number = number;
         this.length = length;
@@ -39,5 +44,6 @@ public class Road {
         this.foodCost = foodCost;
         this.cityA = cityA;
         this.cityB = cityB;
+        this.risk = cityA.getRisk() + cityB.getRisk();
     }
 }

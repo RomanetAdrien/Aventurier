@@ -1,9 +1,17 @@
 package environnement;
 
+import java.util.ArrayList;
+
 /**
  * Created by adrie on 05/04/2018.
  */
 public class City {
+
+    protected static ArrayList<Road> roadMap;
+
+    public  ArrayList<Road> getRoadMap() { return roadMap; }
+    public  void setRoadMap(ArrayList<Road> roads) { City.roadMap=roads; }
+
     protected int id;
 
     public int getId() {
@@ -94,5 +102,18 @@ public class City {
         this.setFood();
         this.setEnergy();
         this.risk = size.getRisk();
+    }
+
+    public ArrayList<City> getNeighbors(){
+        ArrayList<City> neighbors = new ArrayList<>();
+        for(Road road : City.roadMap){
+            if(road.cityA.equals(this)&&neighbors.contains(road.cityB)){
+                neighbors.add(road.cityB);
+            }
+            if(road.cityB.equals(this)&&neighbors.contains(road.cityA)){
+                neighbors.add(road.cityA);
+            }
+        }
+        return neighbors;
     }
 }

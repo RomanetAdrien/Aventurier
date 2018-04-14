@@ -31,13 +31,7 @@ public class Agent {
 
 
     public void chooseNextMove(){
-        switch (strategy){
-            case SHORTESTPATHFOCUS:
-                nextRoad = GetBestRoad(problem.GetAccessibleRoads(problem.getCurrentCity()));
-                break;
-            case NONE:chooseNextMoveBrutal();break;
-            default:chooseNextMoveBrutal();break;
-        }
+        nextRoad=this.GetBestRoad(problem.GetAccessibleRoads(problem.getCurrentCity()));
     }
 
     public void updateStatus(){
@@ -70,8 +64,8 @@ public class Agent {
         energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
         updateStatus();
         if(isFine){
-            food+=nextRoad.getCityB().getFood();
-            energy+=nextRoad.cityB.getEnergy();
+            food=Integer.min(maxfood,food+nextRoad.getCityB().getFood());
+            energy=Integer.min(maxenergy,energy+nextRoad.cityB.getEnergy());
         }
 
         problem.setCurrentCity(nextRoad.getCityB());

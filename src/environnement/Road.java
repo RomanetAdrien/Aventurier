@@ -18,7 +18,7 @@ public class Road {
     }
 
     public int foodCost;
-    public int getFood() {
+    public int getFoodCost() {
         return foodCost;
     }
 

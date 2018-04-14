@@ -13,12 +13,14 @@ public class Problem {
         return graphMatrix;
     }
 
+
     // current city
     private City currentCity;
 
     public City getCurrentCity() {
         return currentCity;
     }
+
 
     // goal city
     private City goalCity;
@@ -57,5 +59,4 @@ public class Problem {
             System.out.println();
         }
     }
-
 }

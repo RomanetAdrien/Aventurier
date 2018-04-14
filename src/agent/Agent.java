@@ -159,6 +159,7 @@ public class Agent {
                 break;
         }
 
+        System.out.println("Desirability : " + desirability);
         return desirability;
     }
 

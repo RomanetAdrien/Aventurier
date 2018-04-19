@@ -26,10 +26,16 @@ public class Road {
     public City getCityA() {
         return cityA;
     }
+    public void setCityA(City cityA) {
+        this.cityA = cityA;
+    }
 
     public City cityB;
     public City getCityB() {
         return cityB;
+    }
+    public void setCityB(City cityB) {
+        this.cityB = cityB;
     }
 
     public float risk;
@@ -45,6 +51,12 @@ public class Road {
         this.cityA = cityA;
         this.cityB = cityB;
         this.risk = cityA.getRisk() + cityB.getRisk();
+    }
+
+    public void SwitchCities(){
+        City dummy = cityA;
+        cityA = cityB;
+        cityB = dummy;
     }
 
     public void printRoad(){

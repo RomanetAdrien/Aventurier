@@ -12,20 +12,6 @@ import java.util.ArrayList;
  */
 public class Aventurier {
 
-    public static void PrintMatrix(Road[][] graphMatrix) {
-        int i, j;
-        for (i = 0; i < 13; i++) {
-            for (j = 0; j < 13; j++) {
-                if (graphMatrix[i][j] != null) {
-                    System.out.print(graphMatrix[i][j].getNumber());
-                } else {
-                    System.out.print(0);
-                }
-            }
-            System.out.println();
-        }
-    }
-
     public static void main(String[] args) {
 
         // Cities
@@ -135,7 +121,7 @@ public class Aventurier {
 
         // solve the problem
         problem.GetAccessibleRoads(problem.getCurrentCity());
-        Agent agent = new Agent(problem, StrategyEnum.FOODFOCUS);
+        Agent agent = new Agent(problem, StrategyEnum.SHORTESTPATHFOCUS);
         agent.run();
     }
 

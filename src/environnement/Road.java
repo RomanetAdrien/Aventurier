@@ -1,4 +1,5 @@
 package environnement;
+import Other.HelpfulFunctions;
 
 public class Road {
 
@@ -11,15 +12,24 @@ public class Road {
     public int getLength() {
         return length;
     }
+    public float GetNormalizedLength(){
+        return HelpfulFunctions.Normalize(length,0,750,0,1);
+    }
 
     protected int energyCost;
     public int getEnergyCost() {
         return energyCost;
     }
+    public float GetNormalizedEnergyCost(){
+        return HelpfulFunctions.Normalize(energyCost,0,6,0,1);
+    }
 
     public int foodCost;
     public int getFoodCost() {
         return foodCost;
+    }
+    public float GetNormalizedFoodCost(){
+        return HelpfulFunctions.Normalize(foodCost,0,5,0,1);
     }
 
     public City cityA;
@@ -42,6 +52,9 @@ public class Road {
     public float getRisk() {
         return risk;
     }
+    public float GetNormalizedRisk(){
+        return HelpfulFunctions.Normalize(risk,0,100,0,1);
+    }
 
     public Road(int number, int length, int foodCost, City cityA, City cityB) {
         this.number = number;
@@ -59,7 +72,4 @@ public class Road {
         cityB = dummy;
     }
 
-    public void printRoad(){
-        System.out.println("From : "+cityA.getName()+"   To : "+cityB.getName());
-    }
 }

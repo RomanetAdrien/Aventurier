@@ -1,5 +1,7 @@
 package environnement;
 
+import Other.HelpfulFunctions;
+
 import java.util.ArrayList;
 
 /**
@@ -13,52 +15,52 @@ public class City {
     public  void setRoadMap(ArrayList<Road> roads) { City.roadMap=roads; }
 
     protected int id;
-
     public int getId() {
         return id;
     }
 
     protected String name;
-
     public String getName() {
         return name;
     }
 
     protected CitySize size;
-
     public CitySize getSize() {
         return size;
     }
 
     protected int distanceToGoal;
-
     public int getDistanceToGoal() {
         return distanceToGoal;
     }
+    public float GetNormalizedDistanceToGoal(){
+        return HelpfulFunctions.Normalize(distanceToGoal,0,750,0,1);
+    }
 
     protected int energyCost;
-
     public int getEnergyCost() {
         return energyCost;
     }
 
     protected int food;
-
     public int getFood() {
         return food;
     }
-
+    public float GetNormalizedFood(){
+        return HelpfulFunctions.Normalize(food,0,100,0,1);
+    }
     // Increase food based on the max food (food + % of max food)
+    // TODO : Adjust value
     public void setFood() {
         switch (this.size) {
             case BIG:
-                this.food = 75;
-                break;
-            case MEDIUM:
                 this.food = 60;
                 break;
-            case SMALL:
+            case MEDIUM:
                 this.food = 50;
+                break;
+            case SMALL:
+                this.food = 40;
                 break;
             default:
                 break;
@@ -66,29 +68,30 @@ public class City {
     }
 
     protected int energy;
-
     public int getEnergy() {
         return energy;
     }
-
+    public float GetNormalizedEnergy(){
+        return HelpfulFunctions.Normalize(energy,0,100,0,1);
+    }
     //Increase energy based on the max energy (energy + % of max energy)
+    // TODO : Adjust value
     public void setEnergy() {
         switch (this.size) {
             case BIG:
-                this.energy = 75;
-                break;
-            case MEDIUM:
                 this.energy = 60;
                 break;
-            case SMALL:
+            case MEDIUM:
                 this.energy = 50;
+                break;
+            case SMALL:
+                this.energy = 40;
                 break;
             default:
                 break;
         }    }
 
     protected float risk;
-
     public float getRisk() {
         return risk;
     }

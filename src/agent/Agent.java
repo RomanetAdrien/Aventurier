@@ -1,5 +1,6 @@
 package agent;
 
+import Other.HelpfulFunctions;
 import environnement.City;
 import environnement.Road;
 
@@ -12,7 +13,15 @@ import java.util.List;
 public class Agent {
 
     protected float energy;
+    public float GetNormalizedEnergy(){
+        return HelpfulFunctions.Normalize(energy,0,100,0,1);
+    }
+
     protected float food;
+    public float GetNormalizedFood(){
+        return HelpfulFunctions.Normalize(food,0,100,0,1);
+    }
+
     protected float maxenergy;
     protected float maxfood;
     protected boolean isFine;
@@ -20,6 +29,9 @@ public class Agent {
     protected Problem problem;
     protected StrategyEnum strategy;
     protected ArrayList<City> visitedCities;
+
+    // TODO Adapt values
+    private float consumptionFactor = 2;
 
     public Agent(Problem problem, StrategyEnum strategy) {
         maxenergy = 100;
@@ -46,7 +58,9 @@ public class Agent {
 
     public float predictedFood(Road road) {
         float aftermove = 0;
-        float afterroad = food - ((50 * road.getLength() * road.getFoodCost()) / problem.getStraightlinedistance());
+        float afterroad = food - consumptionFactor * 100 * ((road.GetNormalizedLength() * road.GetNormalizedFoodCost() / problem.GetNormalizedStraightLinedDistance()));
+        // TODO : Delete if valid
+        // float afterroad = food - ((50 * road.getLength() * road.getFoodCost()) / problem.getStraightlinedistance());
         if (afterroad > 0) {
             aftermove = afterroad + road.getCityB().getFood();
         }
@@ -56,7 +70,9 @@ public class Agent {
 
     public float predictedEnergy(Road road) {
         float aftermove = 0;
-        float afterroad = energy - ((50 * road.getLength() * road.getEnergyCost()) / problem.getStraightlinedistance());
+        float afterroad = energy - consumptionFactor * 100 * ((road.GetNormalizedLength() * road.GetNormalizedEnergyCost() / problem.GetNormalizedStraightLinedDistance()));
+        // TODO : Delete if valid
+//        float afterroad = energy - ((50 * road.getLength() * road.getEnergyCost()) / problem.getStraightlinedistance());
         if (afterroad > 0) {
             aftermove = afterroad + road.getCityB().getEnergy();
         }
@@ -66,17 +82,21 @@ public class Agent {
 
 
     public void move() {
-        food = Float.max(0, food - ((50 * nextRoad.getLength() * nextRoad.getFoodCost()) / problem.getStraightlinedistance()));
-        energy = Float.max(0, energy - ((50 * nextRoad.getLength() * nextRoad.getEnergyCost()) / problem.getStraightlinedistance()));
+        food = Float.max(0, food - consumptionFactor*100*((nextRoad.GetNormalizedLength()) * nextRoad.GetNormalizedFoodCost()) / problem.GetNormalizedStraightLinedDistance());
+        energy = Float.max(0, energy - consumptionFactor*100*((nextRoad.GetNormalizedLength() * nextRoad.GetNormalizedEnergyCost()) / problem.GetNormalizedStraightLinedDistance()));
+
+        // TODO : Delete if valid
+//        food = Float.max(0, food - ((50 * nextRoad.getLength() * nextRoad.getFoodCost()) / problem.getStraightlinedistance()));
+//        energy = Float.max(0, energy - ((50 * nextRoad.getLength() * nextRoad.getEnergyCost()) / problem.getStraightlinedistance()));
         updateStatus();
-        if (isFine) {
+        if (isFine&&(nextRoad.getCityB()!=problem.getGoalCity())) {
             food = Float.min(maxfood, food + nextRoad.getCityB().getFood());
             energy = Float.min(maxenergy, energy + nextRoad.cityB.getEnergy());
         }
 
         problem.setCurrentCity(nextRoad.getCityB());
         visitedCities.add(nextRoad.getCityA());
-        nextRoad.printRoad();
+        HelpfulFunctions.PrintRoad(nextRoad);
         nextRoad = null;
     }
 
@@ -101,23 +121,32 @@ public class Agent {
         float roadDesirability = 0;
 
         for (Road road : roadList) {
-            if(this.problem.getCurrentCity()==road.getCityB()){
+            if (this.problem.getCurrentCity() == road.getCityB()) {
                 road.SwitchCities();
             }
-            if(!visitedCities.contains(road.getCityB())){
+
+//            // TODO : Delete log
+            System.out.println("Road from " + road.getCityA().getName() + " to " + road.getCityB().getName());
+//            System.out.print("Predicted food :" + predictedFood(road));
+//            System.out.print("Predicted energy :" + predictedEnergy(road));
+//            System.out.println();
+
+//            if (!visitedCities.contains(road.getCityB())) {
                 roadDesirability = GetDesirability(road);
                 if (roadDesirability > bestDesirability) {
                     bestDesirability = roadDesirability;
                     bestRoad = road;
                 }
-            }
-        }
-        if(nextRoad == null){
-            nextRoad = roadList.get(0);
+//            }
         }
 
-        // TODO : delete log
-        System.out.println("Desirability : " + bestDesirability);
+        // Keeps the agent from looping infinitely
+        if (bestRoad == null) {
+            bestRoad = roadList.get(roadList.size() - 1);
+        }
+
+        // TODO : Delete log
+        //System.out.println("Desirability : " + bestDesirability);
 
         return bestRoad;
     }
@@ -125,28 +154,36 @@ public class Agent {
     public float GetDesirability(Road road) {
         float desirability = 0;
         float foodBoost = 1, energyBoost = 1, riskBoost = 1, distanceBoost = 1;
-        float boost = 10;
+        float boost = 2;
 
 //        System.out.println("Road from " + road.getCityA().getName() + " to " + road.getCityB().getName());
 
-        float energyCost = (float) road.getEnergyCost() * 50 * road.getLength() / problem.getStraightlinedistance();
-        float foodCost = (float) road.getFoodCost() * 50 * road.getLength() / problem.getStraightlinedistance();
+        float energyCost = (float) consumptionFactor * 100 * ((road.GetNormalizedLength() * road.GetNormalizedEnergyCost() / problem.GetNormalizedStraightLinedDistance()));
+        float foodCost = (float) consumptionFactor * 100 * ((road.GetNormalizedLength() * road.GetNormalizedFoodCost() / problem.GetNormalizedStraightLinedDistance()));
 
-        // TODO : comment log
+        // TODO : Delete log
 //        System.out.println("Energy cost :" + energyCost);
 //        System.out.println("Food cost :" + foodCost);
 
-        float foodDesirability = (float) (food + road.getCityB().getFood()) / foodCost;
-        float energyDesirability = (float) (energy + road.getCityB().getEnergy()) / energyCost;
-        float distanceDesirability;
-        if (road.getCityB().getDistanceToGoal() == 0) {
-            distanceDesirability = 100;
-        }
-        else {
-            distanceDesirability = (float) (road.getLength() + road.getCityB().getDistanceToGoal()) / road.getCityB().getDistanceToGoal();
-        }
-        float riskDesirability = (float) Math.min(food, energy) / (10 * road.getRisk());
+        // Normalized values
+        float foodDesirability = (Float.min(1f, GetNormalizedFood() + road.getCityB().GetNormalizedFood())) / foodCost;
 
+        float energyDesirability = (Float.min(1f, GetNormalizedEnergy()  + road.getCityB().GetNormalizedEnergy())) / energyCost;
+
+        float distanceDesirability;
+        if (road.getCityB().GetNormalizedDistanceToGoal() == 0) {
+            distanceDesirability = 10;
+        } else {
+            // Old value
+            //distanceDesirability = (float) (road.GetNormalizedLength() + road.getCityB().GetNormalizedDistanceToGoal()) / road.getCityB().GetNormalizedDistanceToGoal();
+
+            // new value
+            distanceDesirability = (float) 1/(road.getCityB().GetNormalizedDistanceToGoal());
+        }
+
+        float riskDesirability = (float) Math.min(food, energy) / (road.getRisk());
+
+        // TODO : Delete log
 //        System.out.println("Food desirability :" + foodDesirability);
 //        System.out.println("Energy desirability :" + energyDesirability);
 //        System.out.println("Distance desirability :" + distanceDesirability);
@@ -155,40 +192,47 @@ public class Agent {
         switch (this.strategy) {
             case FOODFOCUS:
                 foodBoost = boost;
-                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
             case ENERGYFOCUS:
                 energyBoost = boost;
-                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+
+//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
             case RISKFOCUS:
                 riskBoost = boost;
-                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+
+//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
             case SURVIVALFOCUS:
-                if(predictedFood(road)<50){
+                if (predictedFood(road) < 40) {
                     foodBoost = 5;
                     distanceBoost = 5;
-                }
-                else if (predictedEnergy(road) < 50){
+                } else if (predictedEnergy(road) < 40) {
                     energyBoost = 5;
                     distanceBoost = 5;
-                }
-                else {
+                } else {
                     distanceBoost = 10;
                 }
+                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
 
-                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
             case SHORTESTPATHFOCUS:
                 distanceBoost = boost;
-                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+
+//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
             default:
                 break;
         }
 
-//        System.out.println("Desirability : " + desirability);
+        // TODO : Delete log
+        System.out.println("Desirability : " + desirability);
         return desirability;
     }
 

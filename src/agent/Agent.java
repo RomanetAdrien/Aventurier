@@ -2,7 +2,9 @@ package agent;
 
 import environnement.City;
 import environnement.Road;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +31,91 @@ public class Agent {
         this.strategy=strategy;
     }
 
+    public Agent(Agent agent){
+        new Agent(agent.energy,agent.food,agent.maxenergy,agent.maxfood,agent.isFine,agent.nextRoad,agent.problem,agent.strategy);
+    }
+
+    public Agent(int energy, int food, int maxenergy, int maxfood, boolean isFine, Road nextRoad, Problem problem, StrategyEnum strategy) {
+        this.energy = energy;
+        this.food = food;
+        this.maxenergy = maxenergy;
+        this.maxfood = maxfood;
+        this.isFine = isFine;
+        this.nextRoad = nextRoad;
+        this.problem = problem;
+        this.strategy = strategy;
+    }
 
     public void chooseNextMove(){
+        if(this.strategy.equals(StrategyEnum.MINMAX)){
+            nextRoad=minimaxDecision(this);
+            return;
+        }
+        if(this.strategy.equals(StrategyEnum.HECATOMBE)){
+            nextRoad = sendScouts();
+        }
         nextRoad=this.GetBestRoad(problem.GetAccessibleRoads(problem.getCurrentCity()));
+    }
+
+    private Road sendScouts() {
+        int scoutnumbers=10000000;
+        List<Pair<Road,Integer>> distances = new ArrayList<>();
+        List<Pair<Road,Integer>> deaths = new ArrayList<>();
+        for(Road road : problem.GetAccessibleRoads(problem.getCurrentCity())){
+            distances.add(new Pair(road,0));
+            deaths.add(new Pair(road,0));
+        }
+        for(int i=0;i<scoutnumbers;i++){
+            AgentScout as = new AgentScout(this);
+            as.run();
+            if(as.isFine)System.out.println("ARRRIVEEEEEEEEEEEEEEEE");
+            for(Pair pair : distances){
+                if(pair.getKey().equals(as.firstroad)){
+                    pair = new Pair(as.firstroad,(int)pair.getValue()+as.traveledDistance);
+                }
+            }
+            for(Pair pair : deaths){
+                if(pair.getKey().equals(as.firstroad)&&!as.isFine){
+                    pair = new Pair(as.firstroad,(int)pair.getValue()+1);
+                }
+            }
+        }
+        int minimumdeath=Integer.MAX_VALUE;
+        Road bestroad=null;
+        for(Road road : problem.GetAccessibleRoads(problem.getCurrentCity())){
+            for(Pair pair : deaths){
+                if(pair.getKey().equals(road) && (int)pair.getValue()<minimumdeath){
+                    bestroad=road;
+                }
+            }
+        }
+        return bestroad;
+    }
+
+    private Road minimaxDecision(Agent agent){
+        List<Road> possibilities = agent.problem.GetAccessibleRoads(agent.problem.getCurrentCity());
+        if(possibilities.isEmpty()){
+            return null;
+        }
+        float maxdesirability = Integer.MIN_VALUE;
+        Road bestroad = possibilities.get(0);
+
+        for(Road road : possibilities){
+            Agent tmp = new Agent(energy,food,maxenergy,maxfood,isFine,nextRoad,problem,strategy);
+            tmp.nextRoad=road;
+            tmp.simulatemove();
+            float mindesirability = Integer.MAX_VALUE;
+            for(Road furtherroad : tmp.problem.GetAccessibleRoads(tmp.problem.getCurrentCity())){
+                if(tmp.GetDesirability(furtherroad)<mindesirability){
+                    mindesirability=tmp.GetDesirability(furtherroad);
+                }
+            }
+            if(mindesirability>maxdesirability){
+                bestroad=road;
+                maxdesirability=mindesirability;
+            }
+        }
+        return bestroad;
     }
 
     public void updateStatus(){
@@ -73,6 +157,19 @@ public class Agent {
         nextRoad=null;
     }
 
+    public void simulatemove(){
+        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
+        energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
+        updateStatus();
+        if(isFine){
+            food=Integer.min(maxfood,food+nextRoad.getCityB().getFood());
+            energy=Integer.min(maxenergy,energy+nextRoad.cityB.getEnergy());
+        }
+
+        problem.setCurrentCity(nextRoad.getCityB());
+        nextRoad=null;
+    }
+
     public void chooseNextMoveBrutal(){
         Road next = problem.GetAccessibleRoads(problem.getCurrentCity()).get(0);
         for(Road road: problem.GetAccessibleRoads(problem.getCurrentCity())){
@@ -109,7 +206,7 @@ public class Agent {
         float foodBoost = 1, energyBoost = 1, riskBoost = 1, distanceBoost = 1;
         float boost = 10;
 
-        System.out.println("Road from : " + road.getCityA().getName() + " to " + road.getCityB().getName());
+        //System.out.println("Road from : " + road.getCityA().getName() + " to " + road.getCityB().getName());
 
         float energyCost = (float) road.getEnergyCost()*50*road.getLength()/problem.getStraightlinedistance();
         float foodCost = (float) road.getFoodCost()*50*road.getLength()/problem.getStraightlinedistance();
@@ -142,12 +239,20 @@ public class Agent {
                 desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case SURVIVALFOCUS:
-
                 desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
             case SHORTESTPATHFOCUS:
                 distanceBoost = boost;
                 desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
+                break;
+            case MINMAX:
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
+                break;
+            case HECATOMBE:
+                desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
+                break;
+            case RANDOM:
+                desirability= (float) Math.random()*100;
                 break;
             default:
                 break;

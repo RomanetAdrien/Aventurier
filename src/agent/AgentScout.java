@@ -25,12 +25,12 @@ public class AgentScout extends Agent{
         }
         traveledRoads++;
         traveledDistance+=nextRoad.getLength();
-        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
-        energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
+        food = Float.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
+        energy = Float.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
         updateStatus();
         if(isFine){
-            food=Integer.min(maxfood,food+nextRoad.getCityB().getFood());
-            energy=Integer.min(maxenergy,energy+nextRoad.cityB.getEnergy());
+            food=Float.min(maxfood,food+nextRoad.getCityB().getFood());
+            energy=Float.min(maxenergy,energy+nextRoad.cityB.getEnergy());
         }
 
         problem.setCurrentCity(nextRoad.getCityB());

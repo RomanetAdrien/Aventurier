@@ -50,7 +50,7 @@ public class Agent {
         new Agent(agent.energy,agent.food,agent.maxenergy,agent.maxfood,agent.isFine,agent.nextRoad,agent.problem,agent.strategy);
     }
 
-    public Agent(int energy, int food, int maxenergy, int maxfood, boolean isFine, Road nextRoad, Problem problem, StrategyEnum strategy) {
+    public Agent(float energy, float food, float maxenergy, float maxfood, boolean isFine, Road nextRoad, Problem problem, StrategyEnum strategy) {
         this.energy = energy;
         this.food = food;
         this.maxenergy = maxenergy;
@@ -75,6 +75,8 @@ public class Agent {
     public void updateStatus() {
         if (food <= 0 || energy <= 0) {
             isFine = false;
+        }
+    }
     private Road sendScouts() {
         int scoutnumbers=10000000;
         List<Pair<Road,Integer>> distances = new ArrayList<>();
@@ -136,12 +138,6 @@ public class Agent {
         return bestroad;
     }
 
-    public void updateStatus(){
-        if(food<=0||energy<=0){
-            isFine=false;
-        }
-    }
-
     public float predictedFood(Road road) {
         float aftermove = 0;
         float afterroad = food - consumptionFactor * 100 * ((road.GetNormalizedLength() * road.GetNormalizedFoodCost() / problem.GetNormalizedStraightLinedDistance()));
@@ -186,28 +182,17 @@ public class Agent {
         nextRoad = null;
     }
 
-    public void chooseNextMoveBrutal() {
     public void simulatemove(){
-        food = Integer.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
-        energy = Integer.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
+        food = Float.max(0, food-((100*nextRoad.getLength()*nextRoad.getFoodCost())/problem.getStraightlinedistance()));
+        energy = Float.max(0, energy-((100*nextRoad.getLength()*nextRoad.getEnergyCost())/problem.getStraightlinedistance()));
         updateStatus();
         if(isFine){
-            food=Integer.min(maxfood,food+nextRoad.getCityB().getFood());
-            energy=Integer.min(maxenergy,energy+nextRoad.cityB.getEnergy());
+            food=Float.min(maxfood,food+nextRoad.getCityB().getFood());
+            energy=Float.min(maxenergy,energy+nextRoad.cityB.getEnergy());
         }
 
         problem.setCurrentCity(nextRoad.getCityB());
         nextRoad=null;
-    }
-
-    public void chooseNextMoveBrutal(){
-        Road next = problem.GetAccessibleRoads(problem.getCurrentCity()).get(0);
-        for (Road road : problem.GetAccessibleRoads(problem.getCurrentCity())) {
-            if (road.cityB.getDistanceToGoal() <= next.cityB.getDistanceToGoal()) {
-                next = road;
-            }
-        }
-        nextRoad = next;
     }
 
     public void printStatus() {

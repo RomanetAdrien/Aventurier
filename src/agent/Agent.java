@@ -216,13 +216,13 @@ public class Agent {
 //            System.out.print("Predicted energy :" + predictedEnergy(road));
 //            System.out.println();
 
-//            if (!visitedCities.contains(road.getCityB())) {
+            if (!visitedCities.contains(road.getCityB())) {
                 roadDesirability = GetDesirability(road);
                 if (roadDesirability > bestDesirability) {
                     bestDesirability = roadDesirability;
                     bestRoad = road;
                 }
-//            }
+            }
         }
 
         // Keeps the agent from looping infinitely
@@ -277,40 +277,47 @@ public class Agent {
 
         switch (this.strategy) {
             case FOODFOCUS:
+                // only food matters.
                 foodBoost = boost;
-                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
-//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = (foodBoost*foodDesirability);
                 break;
+
             case ENERGYFOCUS:
                 energyBoost = boost;
-                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
-
-//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                // only energy matters.
+                desirability = energyBoost*energyDesirability;
                 break;
+
             case RISKFOCUS:
+                // only risk matters.
                 riskBoost = boost;
-                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
-
-//                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
+                desirability = riskDesirability*riskBoost;
                 break;
+
             case SURVIVALFOCUS:
-                if (predictedFood(road) < 40) {
-                    foodBoost = 5;
-                    distanceBoost = 5;
+                // everything is taken into account
+                if (predictedFood(road) < 25) {
+                    foodBoost = boost;
+                    riskBoost = boost;
+                    distanceBoost = boost;
                 } else if (predictedEnergy(road) < 40) {
-                    energyBoost = 5;
-                    distanceBoost = 5;
+                    energyBoost = boost;
+                    riskBoost = boost;
+                    distanceBoost = boost;
                 } else {
-                    distanceBoost = 10;
+                    distanceBoost = 3*boost   ;
                 }
-                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+                desirability = Float.min(foodBoost*foodDesirability,energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
 
 //                desirability = foodBoost * foodDesirability + energyBoost * energyDesirability + distanceBoost * distanceDesirability + riskBoost / riskDesirability;
                 break;
+
             case SHORTESTPATHFOCUS:
+                // only distance matters
                 distanceBoost = boost;
-                desirability = (foodBoost*foodDesirability + energyBoost*energyDesirability)*riskDesirability*riskBoost*distanceDesirability*distanceBoost;
+                desirability = distanceDesirability*distanceBoost;
                 break;
+
             case MINMAX:
                 desirability = foodBoost*foodDesirability + energyBoost*energyDesirability + distanceBoost*distanceDesirability + riskBoost/riskDesirability;
                 break;
@@ -329,7 +336,7 @@ public class Agent {
     }
 
     public void run() {
-
+        System.out.println("My strategy is " + strategy.toString());
         while (isFine && !problem.getCurrentCity().equals(problem.getGoalCity())) {
             chooseNextMove();
             move();

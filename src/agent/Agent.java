@@ -7,6 +7,7 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by adrie on 05/04/2018.
@@ -30,6 +31,7 @@ public class Agent {
     protected Problem problem;
     protected StrategyEnum strategy;
     protected ArrayList<City> visitedCities;
+    protected Random ran;
 
     // TODO Adapt values
     private float consumptionFactor = 2;
@@ -44,6 +46,7 @@ public class Agent {
         this.strategy = strategy;
         this.visitedCities = new ArrayList<>();
         this.visitedCities.add(problem.getCurrentCity());
+        this.ran = new Random();
     }
 
     public Agent(Agent agent){
@@ -167,6 +170,14 @@ public class Agent {
         food = Float.max(0, food - consumptionFactor*100*((nextRoad.GetNormalizedLength()) * nextRoad.GetNormalizedFoodCost()) / problem.GetNormalizedStraightLinedDistance());
         energy = Float.max(0, energy - consumptionFactor*100*((nextRoad.GetNormalizedLength() * nextRoad.GetNormalizedEnergyCost()) / problem.GetNormalizedStraightLinedDistance()));
 
+        // TODO : adjust values
+        // Random bandit attack based on risk
+        if(ran.nextInt(100)<nextRoad.getRisk()){
+            System.out.println("Bandits attack !" + nextRoad.getRisk());
+            food = Float.max(0, food - 50);
+            energy = Float.max (0, energy - 50);
+        }
+
         // TODO : Delete if valid
 //        food = Float.max(0, food - ((50 * nextRoad.getLength() * nextRoad.getFoodCost()) / problem.getStraightlinedistance()));
 //        energy = Float.max(0, energy - ((50 * nextRoad.getLength() * nextRoad.getEnergyCost()) / problem.getStraightlinedistance()));
@@ -211,7 +222,7 @@ public class Agent {
             }
 
 //            // TODO : Delete log
-            System.out.println("Road from " + road.getCityA().getName() + " to " + road.getCityB().getName());
+//            System.out.println("Road from " + road.getCityA().getName() + " to " + road.getCityB().getName());
 //            System.out.print("Predicted food :" + predictedFood(road));
 //            System.out.print("Predicted energy :" + predictedEnergy(road));
 //            System.out.println();
@@ -296,11 +307,11 @@ public class Agent {
 
             case SURVIVALFOCUS:
                 // everything is taken into account
-                if (predictedFood(road) < 25) {
+                if (predictedFood(road) < 50) {
                     foodBoost = boost;
                     riskBoost = boost;
                     distanceBoost = boost;
-                } else if (predictedEnergy(road) < 40) {
+                } else if (predictedEnergy(road) < 50) {
                     energyBoost = boost;
                     riskBoost = boost;
                     distanceBoost = boost;
@@ -331,7 +342,7 @@ public class Agent {
                 break;
         }
         // TODO : Delete log
-        System.out.println("Desirability : " + desirability);
+//        System.out.println("Desirability : " + desirability);
         return desirability;
     }
 

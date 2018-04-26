@@ -17,13 +17,13 @@ public enum CitySize {
         this.name = name;
         switch (name){
             case "SMALL":
-                this.risk = 7.5f;
+                this.risk = 2.5f;
                 break;
             case "MEDIUM":
                 this.risk = 5f;
                 break;
             case "BIG":
-                this.risk = 2.5f;
+                this.risk = 7.5f;
                 break;
                 default:
                     break;

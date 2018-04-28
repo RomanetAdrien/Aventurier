@@ -104,11 +104,26 @@ public class Agent {
             }
         }
         int minimumdeath=Integer.MAX_VALUE;
+        int shortestpath=Integer.MAX_VALUE;
         Road bestroad=null;
         for(Road road : problem.GetAccessibleRoads(problem.getCurrentCity())){
             for(Pair pair : deaths){
                 if(pair.getKey().equals(road) && (int)pair.getValue()<minimumdeath){
                     bestroad=road;
+                    for(Pair distancepair : distances){
+                        if(distancepair.getKey().equals(pair.getKey())){
+                            shortestpath=(int)distancepair.getValue();
+                        }
+                    }
+                }
+                else{
+                    if(pair.getKey().equals(road) && (int)pair.getValue()==minimumdeath){
+                        for(Pair distancepair : distances){
+                            if(distancepair.getKey().equals(road) && (int)distancepair.getValue()<shortestpath){
+                                shortestpath=(int)distancepair.getValue();
+                            }
+                        }
+                    }
                 }
             }
         }

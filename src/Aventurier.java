@@ -121,7 +121,7 @@ public class Aventurier {
 
         // solve the problem
         problem.GetAccessibleRoads(problem.getCurrentCity());
-        Agent agent = new Agent(problem, StrategyEnum.SHORTESTPATHFOCUS);
+        Agent agent = new Agent(problem, StrategyEnum.HECATOMBE);
         agent.run();
     }
 

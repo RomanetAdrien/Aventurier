@@ -6,6 +6,7 @@ import environnement.CitySize;
 import environnement.Road;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by adrie on 05/04/2018.
@@ -112,17 +113,78 @@ public class Aventurier {
         // Debug : print matrix
         //PrintMatrix(graphMatrix);
 
-        // create the problem
-        Problem problem = new Problem(graphMatrix, paris, marseille);
-        problem.setStraightlinedistance(750);
+        System.out.println("Map created.");
 
-        // Debug :  print roads accessible from starting city
-        //problem.GetAccessibleRoads(problem.getCurrentCity());
+        boolean quit = false;
+        Scanner keyboard = new Scanner(System.in);
+        int selection;
+        Agent agent;
+        Problem problem;
 
-        // solve the problem
-        problem.GetAccessibleRoads(problem.getCurrentCity());
-        Agent agent = new Agent(problem, StrategyEnum.HECATOMBE);
-        agent.run();
+        while (!quit) {
+            // Create the problem
+            problem = new Problem(graphMatrix, paris, marseille);
+            problem.setStraightlinedistance(750);
+
+            // Choose strategy for the agent
+            System.out.println("Enter the integer matching your choice.");
+            i = 1;
+            for (StrategyEnum strategyEnum : StrategyEnum.values()){
+                System.out.println(i + ". " +strategyEnum.toString());
+                i++;
+            }
+            System.out.println("0. to quit the application.");
+            selection = keyboard.nextInt();
+
+            switch (selection) {
+                case 0:
+                    quit = true;
+                    break;
+                case 1:
+                    agent = new Agent(problem, StrategyEnum.FOODFOCUS);
+                    agent.run();
+                    break;
+                case 2:
+                    agent = new Agent(problem, StrategyEnum.ENERGYFOCUS);
+                    agent.run();
+                    break;
+                case 3:
+                    agent = new Agent(problem, StrategyEnum.RISKFOCUS);
+                    agent.run();
+                    break;
+                case 4:
+                    agent = new Agent(problem, StrategyEnum.SURVIVALFOCUS);
+                    agent.run();
+                    break;
+                case 5:
+                    agent = new Agent(problem, StrategyEnum.SHORTESTPATHFOCUS);
+                    agent.run();
+                    break;
+                case 6:
+                    agent = new Agent(problem, StrategyEnum.MINMAX);
+                    agent.run();
+                    break;
+                case 7:
+                    agent = new Agent(problem, StrategyEnum.RANDOM);
+                    agent.run();
+                    break;
+                case 8:
+                    agent = new Agent(problem, StrategyEnum.HECATOMBE);
+                    agent.run();
+                    break;
+                default:
+                    System.out.println("Please enter a valide number.");
+            }
+
+            System.out.println();
+            System.out.println("Press Enter to continue.");
+            try {
+                System.in.read();
+            }
+            catch (Exception e){
+
+            }
+        }
     }
 
 }

@@ -8,8 +8,7 @@ public enum StrategyEnum {
     SHORTESTPATHFOCUS("SHORTEST PATH FOCUS", "Taking the shortest overall path"),
     MINMAX("MINMAX ALGORITHM", "We follow the minmax algorithm"),
     RANDOM("RANDOM", "Let's just spin a pen and let the gods decide where we go"),
-    HECATOMBE("HECATOMBE", "Send many other people to try different roads so we can choose the shortest among the safest paths"),
-    NONE("NONE", "No strategy, used by the intelligent agent");
+    HECATOMBE("HECATOMBE", "Send many other people to try different roads so we can choose the shortest among the safest paths");
 
     protected String name;
     protected String description;
@@ -21,9 +20,7 @@ public enum StrategyEnum {
 
     @Override
     public String toString() {
-        return "StrategyEnum{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return "name = '" + name + '\'' +
+                ", description = '" + description + '\'';
     }
 }
